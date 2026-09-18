@@ -1,0 +1,12 @@
+[debug] res = 8
+[debug] res2 = 2
+10
+[debug] res = 32
+[debug] res2 = 16
+48
+[debug] res = 0
+[debug] res2 = 0
+0
+[debug] res = 23
+[debug] res2 = 17
+40
