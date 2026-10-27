@@ -1,61 +1,51 @@
-#include <algorithm>
-#include <functional>
+#include <climits>
 #include <iostream>
 #include <vector>
 
+#define ll long long
+
 using namespace std;
+const int MAXN = 3e5 + 5;
+int n, m;
+ll a[MAXN], b[MAXN], pfs[MAXN];
 
-#define int long long
+void solve() {
+    cin >> n >> m;
+    pfs[0] = 0;
+    for (int i = 1; i <= n; i++) {
+        cin >> a[i];
+        pfs[i] = a[i] + pfs[i - 1];
+    }
+    for (int i = 1; i <= m; i++) {
+        cin >> b[i];
+    }
+    vector<vector<int>> dp(n + 5, vector<int>(m + 5, INT_MAX));
+    for (int j = 1; j <= m; j++) {
+        int l = 1, s = 0;
+        dp[0][j] = 0;
+        for (int i = 1; i <= n; i++) {
+            dp[i][j] = dp[i][j - 1];
+            s += a[i];
+            while (s > b[j] && l <= i) {
+                s -= a[l];
+                l++;
+            }
+            if (l > i) {
+                continue;
+            }
+            dp[i][j] = min(dp[i][j], dp[l - 1][j] + m - j);
+            // cout << dp[i][j] << " ";
+        }
+        // cout << endl;
+    }
+    cout << (dp[n][m] == INT_MAX || dp[n][m] < 0 ? -1 : dp[n][m]) << endl;
+}
 
-int32_t main()
-{
+int main(int argc, char *argv[]) {
     int t;
     cin >> t;
     while (t--) {
-        int n, m;
-        cin >> n >> m;
-        vector<int> a(n), b(m);
-        vector<int> sf(n);
-
-        for (int i = 0; i < n; i++) {
-            cin >> a[i];
-        }
-        for (int i = 0; i < m; i++) {
-            cin >> b[i];
-        }
-        sf[n - 1] = a[n - 1];
-        for (int i = n - 2; i >= 0; i--) {
-            sf[i] = max(sf[i + 1], a[i]);
-        }
-
-        if (b[0] < sf[0]) {
-            cout << -1 << endl;
-            continue;
-        }
-        int res = 0;
-        for (int i = 0; i < n; i++) {
-            int tmp = upper_bound(b.begin(), b.end(), sf[i], greater<int>()) - b.begin();
-            if (tmp == m) {
-                break;
-            }
-
-            int c = b[tmp - 1];
-            int cnt = 1;
-            int s = 0;
-            while (i < n - 1 && sf[i] == sf[i + 1]) {
-                if (s + a[i] > c) {
-                    cnt++;
-                    s = 0;
-                }
-                s += a[i];
-                i++;
-            }
-            if (s > 0) {
-                cnt++;
-            }
-            // cout << sf[i] << " " << cnt << " " << tmp << endl;
-            res += cnt * (m - tmp);
-        }
-        cout << res << endl;
+        solve();
     }
+    return 0;
 }

@@ -1,52 +1,65 @@
 #include <algorithm>
 #include <iostream>
+#include <unordered_set>
 #include <vector>
-
-#define int long long
+#define ll long long
+#define tup3 tuple<int, int, int>
 
 using namespace std;
+const int MAXN = 2e5 + 5, MAXX = 4e5 + 5;
+int n, k;
+ll a[MAXN], b[MAXN];
 
-int32_t main()
-{
+void solve() {
+    cin >> n >> k;
+    vector<tup3> c(n * 2);
+    for (int i = 1; i <= n; i++) {
+        cin >> a[i];
+        c[i - 1] = {a[i], -1, i};
+    }
+    for (int i = 1; i <= n; i++) {
+        cin >> b[i];
+        c[n + i - 1] = {b[i], 1, i};
+    }
+    sort(c.begin(), c.end(), [&](tup3 &a, tup3 &b) -> bool {
+        int ap = get<0>(a), bp = get<0>(b);
+        if (ap == bp) {
+            return get<1>(a) > get<1>(b);
+        }
+        return ap > bp;
+    });
+    for (int i = 0; i < c.size();) {
+        int p = get<0>(c[i]);
+        int delta = get<1>(c[i]);
+        int j = i + 1;
+        while (j < c.size() && get<0>(c[j]) == p) {
+            delta += get<1>(c[j]);
+            c[j] = {p, 0, get<2>(c[j])};
+            j++;
+        }
+        c[i] = {p, delta, get<2>(c[i])};
+        i = j;
+    }
+    int review = 0;
+    ll res = 0;
+    unordered_set<int> s;
+    for (auto &t : c) {
+        int p = get<0>(t), delta = get<1>(t), i = get<2>(t);
+        review += delta;
+        s.insert(i);
+        // cout << p << " " << delta << " " << i << endl;
+        if (review <= k) {
+            res = max(res, p * (ll)s.size());
+        }
+    }
+    cout << res << endl;
+}
+
+int main(int argc, char *argv[]) {
     int t;
     cin >> t;
     while (t--) {
-        int n, k;
-        cin >> n >> k;
-        vector<int> a(n), b(n);
-        for (int i = 0; i < n; i++) {
-            cin >> a[i];
-        }
-        for (int i = 0; i < n; i++) {
-            cin >> b[i];
-        }
-        sort(a.begin(), a.end());
-        sort(b.begin(), b.end());
-        // if (k == 0) {
-        //     cout << a[0] << endl;
-        //     continue;
-        // }
-        int res = a[0] * n;
-        for (int i = 0; i < n; i++) {
-            int price = b[i];
-            int cnt = n - i;
-            int earn = price * cnt;
-            int bad = cnt - (n - (lower_bound(a.begin(), a.end(), price) - a.begin()));
-            if (bad <= k) {
-                // cout << price << " " << bad << " " << earn << endl;
-                res = max(res, earn);
-            }
-        }
-        for (int i = 0; i < n; i++) {
-            int price = a[i];
-            int cnt = n - (lower_bound(b.begin(), b.end(), price) - b.begin());
-            int earn = cnt * price;
-            int bad = cnt - (n - i);
-            if (bad <= k) {
-                // cout << price << " " << bad << " " << earn << endl;
-                res = max(res, earn);
-            }
-        }
-        cout << res << endl;
+        solve();
     }
+    return 0;
 }
