@@ -1,0 +1,7 @@
+[DBG] TEST: 1
+[DBG] i: 1
+[DBG] peaks[i].first: 3
+[DBG] peaks[i].second: 7
+[DBG] peaks[i + 1].first: 4
+[DBG] peaks[i + 1].second: 14
+12
